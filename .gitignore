@@ -1,1 +1,3 @@
-
+__pycache__/
+*.pyc
+/seciuriy_codes.py
