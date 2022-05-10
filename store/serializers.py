@@ -19,3 +19,8 @@ class ProductSerializer(serializers.ModelSerializer):  # change base class to 'M
 
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            return serializers.ValidationError('Password do not match')
+        return data
