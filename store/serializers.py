@@ -13,14 +13,12 @@ class ProductSerializer(serializers.ModelSerializer):  # change base class to 'M
     class Meta:
         model = Product
         # fields = to an array or tuples  of fields in product class we wane include here
-        fields = ['id', 'title', 'unit_price', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'description', 'slug', 'inventory',
+                  'unit_price', 'price_with_tax', 'collection']
 
     price_with_tax = serializers.SerializerMethodField(method_name='calculate_tax')
 
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
 
-    def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            return serializers.ValidationError('Password do not match')
-        return data
+
