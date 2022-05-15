@@ -15,8 +15,8 @@ class Collection(models.Model):
     def __str__(self) -> str:
         return self.title
 
-    class Meta:
-        ordering = ['title']   # it will be sorted by the title in admin or every where else
+    # class Meta:
+    #     ordering = ['title']   # it will be sorted by the title in admin or every where else
 
 
 class Product(models.Model):
