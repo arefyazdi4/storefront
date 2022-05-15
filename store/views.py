@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Product, Collection
 from .serializers import ProductSerializer, CollectionSerializer
+from django.db.models.aggregates import Count
 
 
 @api_view(['GET', 'POST'])
@@ -43,7 +44,7 @@ def product_detail(request, id):
 @api_view(['GET', 'POST'])
 def collection_list(request):
     if request.method == 'GET':
-        query_set = Collection.objects.all()
+        query_set = Collection.objects.annotate(product_count=Count('products'))
         serializer = CollectionSerializer(
             query_set, many=True, context={'request': request})  # using context to pass extra stuff
         return Response(serializer.data)
@@ -56,7 +57,9 @@ def collection_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def collection_detail(request, pk):
-    collection = get_object_or_404(Collection, pk=pk)
+    collection = get_object_or_404(
+        Collection.objects.annotate(
+            product_count=Count('products')), pk=pk)
     if request.method == 'GET':
         serializer = CollectionSerializer(collection, context={'request': request})  # serializer.data->dict object
         return Response(serializer.data)
@@ -66,9 +69,8 @@ def collection_detail(request, pk):
         serializer.save()
         return Response(serializer.data)
     elif request.method == 'DELETE':
-        if collection.product_set.count() > 0:
-            return Response({'error': 'product cannot be deleted because it is associated with an order item'},
+        if collection.products.count() > 0:
+            return Response({'error': 'Collection cannot be deleted because it is associated with one or more Products'},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         collection.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
