@@ -1,3 +1,4 @@
-__pycache__/
 *.pyc
-/seciuriy_codes.py
+/media/
+/static/
+general.log
